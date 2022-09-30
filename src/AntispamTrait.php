@@ -61,10 +61,6 @@ Trait AntispamTrait()
 
      public function getHoneyPots()
      {
-        $honeyPots = [];
-        foreach ($this->HoneyPots as $honeyPot) {
-            $honeyPots[$honeyPot] = md5($honeyPot);
-        }
-        return $honeyPots;
+        return $this->honeyPots;
     }
 }
