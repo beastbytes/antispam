@@ -6,23 +6,15 @@ namespace BeastBytes\Form\Antispam
 
 Trait AntispamTrait()
 {
+    private bool $hasSpam = false;
 
     /**
      * @param array $honeyPots
+     *
+     * Honey pots are attributes that span bots are likely
+     * to complete, for example 'email'.
      */
     private array $honeyPots = [];
-
-
-
-/**
- * Honey pots are attributes that span bots are likely
- * to complete, for example 'email'.
- * Each attribute creates two input fields:
- * 1. A hidden field with the original attribute name.
- * This should be empty on form submission;
- * if not a spam bot has completed it.
- * 2. A text input with a new name that is shown to the user.
- */
 
     public function addHoneyPot(string $name, string $type = 'text'): self
     {
@@ -59,8 +51,47 @@ Trait AntispamTrait()
         return $this->addHoneyPots($value);
     }
 
-     public function getHoneyPots()
-     {
+    public function getHoneyPots()
+    {
         return $this->honeyPots;
+    }
+
+    public function load(array|object|null $data, ?string $formName = null): bool
+    {
+        if (!is_array($data)) {
+            return false;
+        }
+
+        $this->rawData = [];
+        $scope = $formName ?? $this->getFormName();
+
+        if ($scope === '' && !empty($data)) {
+            $this->rawData = $data;
+        } elseif (isset($data[$scope])) {
+            if (!is_array($data[$scope])) {
+                return false;
+            }
+            $this->rawData = $data[$scope];
+        }
+
+        $this->checkHoneyPots();
+
+        /**
+         * @var mixed $value
+         */
+        foreach ($this->rawData as $name => $value) {
+            $this->setAttribute((string) $name, $value);
+        }
+
+        return $this->rawData !== [];
+    }
+
+    private checkHoneyPots(): bool
+    {
+        foreach (array_keys($this->honeyPots) as $name) {
+            if (!empty($this->raw data['$name'])) {
+                $this->hasSpam = true;
+            }
+        }
     }
 }
