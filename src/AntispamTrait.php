@@ -6,7 +6,7 @@ namespace BeastBytes\Form\Antispam
 
 Trait AntispamTrait()
 {
-    private bool $hasSpam = false;
+    private array $spamFields = [];
 
     /**
      * @param array $honeyPots
@@ -56,6 +56,16 @@ Trait AntispamTrait()
         return $this->honeyPots;
     }
 
+    public function getSpamFields(): array 
+    {
+        return $this->spamFields;
+    }
+
+    public function hasSpam(): bool
+    {
+        return $this->spamFields !== [];
+    }
+
     public function load(array|object|null $data, ?string $formName = null): bool
     {
         if (!is_array($data)) {
@@ -89,9 +99,12 @@ Trait AntispamTrait()
     private checkHoneyPots(): bool
     {
         foreach (array_keys($this->honeyPots) as $name) {
-            if (!empty($this->raw data['$name'])) {
-                $this->hasSpam = true;
+            if (!empty($this->rawData[$name])) {
+                $this->spamFields[] = $name;
             }
+
+            $this->rawData[$name] = $this->rawData[md5($name)];
+            unset($this->rawData[md5($name)]);
         }
     }
 }
