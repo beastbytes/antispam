@@ -84,7 +84,7 @@ Trait AntispamTrait()
             $this->rawData = $data[$scope];
         }
 
-        $this->checkHoneyPots();
+        $this->checkForSpam();
 
         /**
          * @var mixed $value
@@ -96,7 +96,7 @@ Trait AntispamTrait()
         return $this->rawData !== [];
     }
 
-    private checkHoneyPots(): bool
+    private checkForSpam(): void
     {
         foreach (array_keys($this->honeyPots) as $name) {
             if (!empty($this->rawData[$name])) {
